@@ -1,7 +1,8 @@
 import sqlite3
 import threading
+import os
 
-DB_NAME = "bot_data.db"
+DB_NAME = os.getenv("DB_PATH", "bot_data.db")
 local = threading.local()
 
 
@@ -36,6 +37,9 @@ def init_db():
         )
     """)
     conn.commit()
+
+
+init_db()
 
 
 def upsert_user(user_id, first_name, last_name, username, photo_url=None):
