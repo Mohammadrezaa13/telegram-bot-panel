@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bot Panel — Users</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);font-family:'Segoe UI',sans-serif;color:#fff;padding:30px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:15px}
+.header h1{font-size:1.5rem;font-weight:600}
+.logout{padding:10px 20px;border:1px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(255,255,255,.06);color:#fff;text-decoration:none;font-size:.9rem;transition:.3s}
+.logout:hover{background:rgba(255,255,255,.15)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:30px}
+.stat-card{background:rgba(255,255,255,.08);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:22px;text-align:center}
+.stat-card .num{font-size:2rem;font-weight:700;background:linear-gradient(135deg,#7c5cfc,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-card .label{font-size:.85rem;color:rgba(255,255,255,.6);margin-top:5px}
+.search-box{width:100%;padding:14px 18px;border:1px solid rgba(255,255,255,.15);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;font-size:.95rem;outline:none;margin-bottom:20px}
+.search-box::placeholder{color:rgba(255,255,255,.35)}
+.search-box:focus{border-color:#7c5cfc}
+table{width:100%;border-collapse:collapse;background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden}
+thead th{padding:14px 18px;text-align:left;font-size:.8rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.5);border-bottom:1px solid rgba(255,255,255,.08)}
+tbody td{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.05);font-size:.9rem}
+tbody tr:hover{background:rgba(255,255,255,.04)}
+tbody tr:last-child td{border-bottom:none}
+.user-cell{display:flex;align-items:center;gap:12px}
+.avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(124,92,252,.4);background:rgba(255,255,255,.1)}
+.avatar-placeholder{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#7c5cfc,#a78bfa);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.85rem}
+.username{color:#a78bfa}
+.uid{font-family:monospace;color:rgba(255,255,255,.5);font-size:.8rem}
+.badge{display:inline-block;padding:4px 10px;border-radius:8px;font-size:.75rem;font-weight:600}
+.badge-new{background:rgba(124,92,252,.2);color:#a78bfa}
+.link{color:#a78bfa;text-decoration:none}
+.link:hover{text-decoration:underline}
+@media(max-width:768px){table{font-size:.8rem}thead th,tbody td{padding:10px 12px}}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>📊 Bot Dashboard</h1>
+<a href="/logout" class="logout">Logout</a>
+</div>
+<div class="stats">
+<div class="stat-card"><div class="num">{{ stats.total_users }}</div><div class="label">Total Users</div></div>
+<div class="stat-card"><div class="num">{{ stats.new_today }}</div><div class="label">New Today</div></div>
+<div class="stat-card"><div class="num">{{ stats.total_actions }}</div><div class="label">Total Actions</div></div>
+</div>
+<input type="text" class="search-box" id="search" placeholder="Search by name, username, or ID..." oninput="filterTable()">
+<table>
+<thead>
+<tr>
+<th>User</th>
+<th>Username</th>
+<th>User ID</th>
+<th>First Seen</th>
+<th>Last Seen</th>
+</tr>
+</thead>
+<tbody id="userTable">
+{% for user in users %}
+<tr data-search="{{ (user.first_name or '')|lower }} {{ (user.last_name or '')|lower }} {{ (user.username or '')|lower }} {{ user.user_id }}">
+<td>
+<div class="user-cell">
+{% if user.photo_url %}
+<img class="avatar" src="{{ user.photo_url }}" alt="" onerror="this.outerHTML='<div class=\'avatar-placeholder\'>{{ (user.first_name or \'?\')[0]|upper }}</div>'">
+{% else %}
+<div class="avatar-placeholder">{{ (user.first_name or '?')[0]|upper }}</div>
+{% endif %}
+<div>
+<a href="/user/{{ user.user_id }}" class="link">{{ user.first_name }} {{ user.last_name or '' }}</a>
+</div>
+</div>
+</td>
+<td class="username">{{ '@' + user.username if user.username else '—' }}</td>
+<td><span class="uid">{{ user.user_id }}</span></td>
+<td>{{ user.first_seen }}</td>
+<td>{{ user.last_seen }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+<script>
+function filterTable(){
+const q=document.getElementById('search').value.toLowerCase();
+document.querySelectorAll('#userTable tr').forEach(r=>{
+r.style.display=r.dataset.search.includes(q)?'':'none';
+});
+}
+</script>
+</body>
+</html>

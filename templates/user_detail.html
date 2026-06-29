@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ user.first_name }} — Bot Panel</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);font-family:'Segoe UI',sans-serif;color:#fff;padding:30px}
+.back{color:#a78bfa;text-decoration:none;font-size:.9rem;display:inline-block;margin-bottom:25px}
+.back:hover{text-decoration:underline}
+.profile{background:rgba(255,255,255,.08);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:30px;max-width:600px;margin-bottom:25px}
+.profile-top{display:flex;align-items:center;gap:20px;margin-bottom:20px}
+.avatar{width:70px;height:70px;border-radius:50%;object-fit:cover;border:3px solid rgba(124,92,252,.5)}
+.avatar-placeholder{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#7c5cfc,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700}
+.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.info-row:last-child{border-bottom:none}
+.label{color:rgba(255,255,255,.5);font-size:.85rem}
+.value{font-weight:500}
+.uid{font-family:monospace}
+h2{font-size:1.2rem;margin-bottom:15px}
+.actions{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:16px;max-width:600px;overflow:hidden}
+.action-row{display:flex;justify-content:space-between;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,.05);font-size:.9rem}
+.action-row:last-child{border-bottom:none}
+.action-type{color:#a78bfa;font-weight:600}
+.action-time{color:rgba(255,255,255,.4);font-size:.8rem}
+.action-detail{color:rgba(255,255,255,.6);font-size:.8rem}
+</style>
+</head>
+<body>
+<a href="/" class="back">← Back to Dashboard</a>
+<div class="profile">
+<div class="profile-top">
+{% if user.photo_url %}
+<img class="avatar" src="{{ user.photo_url }}" alt="" onerror="this.outerHTML='<div class=\'avatar-placeholder\'>{{ (user.first_name or \'?\')[0]|upper }}</div>'">
+{% else %}
+<div class="avatar-placeholder">{{ (user.first_name or '?')[0]|upper }}</div>
+{% endif %}
+<div>
+<div style="font-size:1.3rem;font-weight:600">{{ user.first_name }} {{ user.last_name or '' }}</div>
+<div style="color:rgba(255,255,255,.5)">@{{ user.username or 'no username' }}</div>
+</div>
+</div>
+<div class="info-row"><span class="label">User ID</span><span class="value uid">{{ user.user_id }}</span></div>
+<div class="info-row"><span class="label">First Seen</span><span class="value">{{ user.first_seen }}</span></div>
+<div class="info-row"><span class="label">Last Seen</span><span class="value">{{ user.last_seen }}</span></div>
+</div>
+<h2>Recent Activity</h2>
+<div class="actions">
+{% for a in actions %}
+<div class="action-row">
+<div>
+<span class="action-type">{{ a.action }}</span>
+{% if a.detail %}<span class="action-detail"> — {{ a.detail }}</span>{% endif %}
+</div>
+<span class="action-time">{{ a.timestamp }}</span>
+</div>
+{% endfor %}
+{% if not actions %}
+<div class="action-row" style="color:rgba(255,255,255,.4)">No activity yet</div>
+{% endif %}
+</div>
+</body>
+</html>

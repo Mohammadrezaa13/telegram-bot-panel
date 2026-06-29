@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — Bot Panel</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);font-family:'Segoe UI',sans-serif;color:#fff}
+.login-box{background:rgba(255,255,255,.08);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:40px;width:360px;text-align:center}
+.login-box h1{margin-bottom:30px;font-size:1.6rem;font-weight:600}
+input[type=password]{width:100%;padding:14px 18px;border:1px solid rgba(255,255,255,.2);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;font-size:1rem;outline:none;margin-bottom:20px}
+input[type=password]::placeholder{color:rgba(255,255,255,.4)}
+input[type=password]:focus{border-color:#7c5cfc;box-shadow:0 0 20px rgba(124,92,252,.25)}
+button{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#7c5cfc,#a78bfa);color:#fff;font-size:1rem;font-weight:600;cursor:pointer;transition:.3s}
+button:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(124,92,252,.4)}
+.error{color:#f87171;margin-bottom:15px;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="login-box">
+<h1>🔒 Bot Panel</h1>
+{% if error %}<p class="error">{{ error }}</p>{% endif %}
+<form method="POST">
+<input type="password" name="password" placeholder="Enter password" autofocus>
+<button type="submit">Login</button>
+</form>
+</div>
+</body>
+</html>
