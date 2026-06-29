@@ -76,7 +76,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.edit_message_text(
         text=f"{query.data}",
-        reply_markup=load_buttons(),
     )
 
 

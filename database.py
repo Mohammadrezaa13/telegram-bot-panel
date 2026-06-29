@@ -2,8 +2,14 @@ import sqlite3
 import threading
 import os
 import logging
+from datetime import datetime, timezone, timedelta
 
 DB_NAME = os.getenv("DB_PATH", "/tmp/bot_data.db")
+IRAN_TZ = timezone(timedelta(hours=3, minutes=30))
+
+
+def now_iran():
+    return datetime.now(IRAN_TZ).strftime("%Y-%m-%d %H:%M:%S")
 local = threading.local()
 
 logging.basicConfig(level=logging.INFO)
@@ -27,8 +33,8 @@ def init_db():
                 last_name TEXT,
                 username TEXT,
                 photo_url TEXT,
-                first_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                last_seen TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                first_seen TEXT,
+                last_seen TEXT
             )
         """)
         conn.execute("""
@@ -37,7 +43,7 @@ def init_db():
                 user_id INTEGER,
                 action TEXT,
                 detail TEXT,
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                timestamp TEXT,
                 FOREIGN KEY (user_id) REFERENCES users(user_id)
             )
         """)
@@ -52,24 +58,25 @@ init_db()
 
 def upsert_user(user_id, first_name, last_name, username, photo_url=None):
     conn = get_conn()
+    ts = now_iran()
     conn.execute("""
-        INSERT INTO users (user_id, first_name, last_name, username, photo_url, last_seen)
-        VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        INSERT INTO users (user_id, first_name, last_name, username, photo_url, first_seen, last_seen)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(user_id) DO UPDATE SET
             first_name=excluded.first_name,
             last_name=excluded.last_name,
             username=excluded.username,
             photo_url=COALESCE(excluded.photo_url, users.photo_url),
-            last_seen=CURRENT_TIMESTAMP
-    """, (user_id, first_name, last_name, username, photo_url))
+            last_seen=excluded.last_seen
+    """, (user_id, first_name, last_name, username, photo_url, ts, ts))
     conn.commit()
 
 
 def log_action(user_id, action, detail=""):
     conn = get_conn()
     conn.execute(
-        "INSERT INTO actions (user_id, action, detail) VALUES (?, ?, ?)",
-        (user_id, action, detail)
+        "INSERT INTO actions (user_id, action, detail, timestamp) VALUES (?, ?, ?, ?)",
+        (user_id, action, detail, now_iran())
     )
     conn.commit()
 
@@ -92,8 +99,10 @@ def get_user_actions(user_id):
 def get_stats():
     conn = get_conn()
     total = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+    today_str = now_iran()[:10]
     today = conn.execute(
-        "SELECT COUNT(*) FROM users WHERE date(first_seen)=date('now')"
+        "SELECT COUNT(*) FROM users WHERE first_seen LIKE ?",
+        (today_str + "%",)
     ).fetchone()[0]
     actions = conn.execute("SELECT COUNT(*) FROM actions").fetchone()[0]
     return {"total_users": total, "new_today": today, "total_actions": actions}
