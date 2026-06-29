@@ -75,7 +75,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     database.log_action(user.id, "button_click", query.data)
 
     await query.edit_message_text(
-        text=f"You selected: {query.data}\n\nChoose again:",
+        text=f"{query.data}",
         reply_markup=load_buttons(),
     )
 
