@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bot Panel — Users</title>
+<title>Bot Panel - Users</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{min-height:100vh;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);font-family:'Segoe UI',sans-serif;color:#fff;padding:30px}
@@ -28,8 +28,6 @@ tbody tr:last-child td{border-bottom:none}
 .avatar-placeholder{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#7c5cfc,#a78bfa);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:.85rem}
 .username{color:#a78bfa}
 .uid{font-family:monospace;color:rgba(255,255,255,.5);font-size:.8rem}
-.badge{display:inline-block;padding:4px 10px;border-radius:8px;font-size:.75rem;font-weight:600}
-.badge-new{background:rgba(124,92,252,.2);color:#a78bfa}
 .link{color:#a78bfa;text-decoration:none}
 .link:hover{text-decoration:underline}
 @media(max-width:768px){table{font-size:.8rem}thead th,tbody td{padding:10px 12px}}
@@ -37,7 +35,7 @@ tbody tr:last-child td{border-bottom:none}
 </head>
 <body>
 <div class="header">
-<h1>📊 Bot Dashboard</h1>
+<h1>Bot Dashboard</h1>
 <a href="/logout" class="logout">Logout</a>
 </div>
 <div class="stats">
@@ -62,7 +60,7 @@ tbody tr:last-child td{border-bottom:none}
 <td>
 <div class="user-cell">
 {% if user.photo_url %}
-<img class="avatar" src="{{ user.photo_url }}" alt="" onerror="this.outerHTML='<div class=\'avatar-placeholder\'>{{ (user.first_name or \'?\')[0]|upper }}</div>'">
+<img class="avatar" src="{{ user.photo_url }}" alt="" onerror="handleImgError(this, '{{ (user.first_name or '?')[0]|upper }}')">
 {% else %}
 <div class="avatar-placeholder">{{ (user.first_name or '?')[0]|upper }}</div>
 {% endif %}
@@ -71,7 +69,7 @@ tbody tr:last-child td{border-bottom:none}
 </div>
 </div>
 </td>
-<td class="username">{{ '@' + user.username if user.username else '—' }}</td>
+<td class="username">{{ '@' + user.username if user.username else '---' }}</td>
 <td><span class="uid">{{ user.user_id }}</span></td>
 <td>{{ user.first_seen }}</td>
 <td>{{ user.last_seen }}</td>
@@ -80,11 +78,17 @@ tbody tr:last-child td{border-bottom:none}
 </tbody>
 </table>
 <script>
-function filterTable(){
-const q=document.getElementById('search').value.toLowerCase();
-document.querySelectorAll('#userTable tr').forEach(r=>{
-r.style.display=r.dataset.search.includes(q)?'':'none';
-});
+function handleImgError(img, letter) {
+    var div = document.createElement('div');
+    div.className = 'avatar-placeholder';
+    div.textContent = letter;
+    img.replaceWith(div);
+}
+function filterTable() {
+    var q = document.getElementById('search').value.toLowerCase();
+    document.querySelectorAll('#userTable tr').forEach(function(r) {
+        r.style.display = r.dataset.search.includes(q) ? '' : 'none';
+    });
 }
 </script>
 </body>

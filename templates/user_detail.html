@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ user.first_name }} — Bot Panel</title>
+<title>{{ user.first_name }} - Bot Panel</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{min-height:100vh;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);font-family:'Segoe UI',sans-serif;color:#fff;padding:30px}
@@ -28,11 +28,11 @@ h2{font-size:1.2rem;margin-bottom:15px}
 </style>
 </head>
 <body>
-<a href="/" class="back">← Back to Dashboard</a>
+<a href="/" class="back">Back to Dashboard</a>
 <div class="profile">
 <div class="profile-top">
 {% if user.photo_url %}
-<img class="avatar" src="{{ user.photo_url }}" alt="" onerror="this.outerHTML='<div class=\'avatar-placeholder\'>{{ (user.first_name or \'?\')[0]|upper }}</div>'">
+<img class="avatar" src="{{ user.photo_url }}" alt="" onerror="handleImgError(this, '{{ (user.first_name or '?')[0]|upper }}')">
 {% else %}
 <div class="avatar-placeholder">{{ (user.first_name or '?')[0]|upper }}</div>
 {% endif %}
@@ -51,7 +51,7 @@ h2{font-size:1.2rem;margin-bottom:15px}
 <div class="action-row">
 <div>
 <span class="action-type">{{ a.action }}</span>
-{% if a.detail %}<span class="action-detail"> — {{ a.detail }}</span>{% endif %}
+{% if a.detail %}<span class="action-detail"> - {{ a.detail }}</span>{% endif %}
 </div>
 <span class="action-time">{{ a.timestamp }}</span>
 </div>
@@ -60,5 +60,13 @@ h2{font-size:1.2rem;margin-bottom:15px}
 <div class="action-row" style="color:rgba(255,255,255,.4)">No activity yet</div>
 {% endif %}
 </div>
+<script>
+function handleImgError(img, letter) {
+    var div = document.createElement('div');
+    div.className = 'avatar-placeholder';
+    div.textContent = letter;
+    img.replaceWith(div);
+}
+</script>
 </body>
 </html>
